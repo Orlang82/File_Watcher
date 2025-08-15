@@ -1,0 +1,36 @@
+# Папки (я вижу вы отметили .pyproject и .vscode)
+.pyproject/
+.vscode/
+logs/
+
+# Python файлы
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Виртуальные окружения  
+venv/
+env/
+.env
+
+# IDE файлы
+.vscode/
+.idea/
+
+# Логи
+*.log
+
+# Временные файлы
+*.tmp
+*.temp
+
+# Базы данных (если есть)
+*.db
+*.sqlite
+
+# Конфиденциальные файлы
+config.ini
+secrets.json

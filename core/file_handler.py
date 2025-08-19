@@ -68,7 +68,7 @@ def wait_for_file_stability(file_path: Path, max_wait_time=10):
             return False
     
     logger.warning(f"Превышено время ожидания стабилизации для файла {file_path.name}")
-    return True
+    return False
 
 def copy_file_with_retries(src_path: Path, dest_path: Path, max_attempts=MAX_COPY_ATTEMPTS):
     """

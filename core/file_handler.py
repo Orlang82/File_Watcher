@@ -15,6 +15,8 @@ from config.settings import (
 
 logger = logging.getLogger(__name__)
 
+logger.info("=== ЗАГРУЖЕН ОБНОВЛЕННЫЙ file_handler.py v2.1 ===")
+
 def wait_for_file_stability(file_path: Path, max_wait_time=10):
     """
     Ожидает стабилизации файла (перестанет изменяться размер).
@@ -126,6 +128,17 @@ def copy_file_with_retries(src_path: Path, dest_path: Path, max_attempts=MAX_COP
             # Копируем файл
             shutil.copy2(src_path, dest_path)
             logger.info(f"Файл {src_path.name} успешно скопирован в {dest_path.parent}")
+            try:
+                file_size = dest_path.stat().st_size
+                size_mb = file_size / (1024 * 1024)
+                if file_size < 1024:
+                    logger.info(f"📏 Размер файла: {file_size} байт")
+                elif file_size < 1024 * 1024:
+                    logger.info(f"📏 Размер файла: {file_size / 1024:.1f} KB")
+                else:
+                    logger.info(f"📏 Размер файла: {size_mb:.2f} MB")
+            except Exception as e:
+                logger.debug(f"Не удалось получить размер файла: {e}")
             return True
             
         except PermissionError as e:
@@ -225,3 +238,25 @@ def monitor_observer_health(observers):
                 
         except Exception as e:
             logger.error(f"Ошибка при мониторинге наблюдателя {i+1}: {e}")
+
+def check_file_size(file_path: Path, min_size=1024):
+    """
+    Проверяет что файл имеет минимальный размер.
+    
+    Args:
+        file_path (Path): Путь к файлу
+        min_size (int): Минимальный размер в байтах (по умолчанию 1KB)
+        
+    Returns:
+        bool: True если размер достаточный
+    """
+    try:
+        size = file_path.stat().st_size
+        if size < min_size:
+            logger.warning(f"Файл {file_path.name} слишком мал ({size} байт), возможно не завершен")
+            return False
+        logger.debug(f"Размер файла {file_path.name}: {size} байт")
+        return True
+    except Exception as e:
+        logger.error(f"Ошибка проверки размера файла {file_path.name}: {e}")
+        return False

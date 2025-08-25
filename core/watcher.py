@@ -10,8 +10,11 @@ from watchdog.events import FileSystemEventHandler
 
 from config.settings import COPY_DELAY
 from .file_handler import wait_for_file_stability, copy_file_with_retries, create_dest_directory
+from .file_handler import check_file_size
 
 logger = logging.getLogger(__name__)
+
+logger.info("=== ЗАГРУЖЕН ОБНОВЛЕННЫЙ watcher.py v2.1 ===")
 
 class MultiDirHandler(FileSystemEventHandler):
     """
@@ -80,11 +83,16 @@ class MultiDirHandler(FileSystemEventHandler):
             # Ждем стабилизации файла
             logger.debug(f"Ожидание стабилизации файла {file_path.name}...")
             time.sleep(COPY_DELAY)
-            
-            if not wait_for_file_stability(file_path):
+
+            if not wait_for_file_stability(file_path, max_wait_time=25):  # Ожидание стабилизации увеличено до 25 сек.
                 logger.warning(f"Файл {file_path.name} не стабилизировался, пропускаем")
                 return
             
+            # Добавляем проверку размера
+            if not check_file_size(file_path):
+                logger.warning(f"Файл {file_path.name} имеет недостаточный размер, пропускаем")
+                return
+
             # Показываем уведомление (импортируем здесь чтобы избежать циклических импортов)
             try:
                 from ui.notifications import show_notification

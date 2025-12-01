@@ -35,3 +35,4 @@ env/
 # Конфиденциальные файлы
 config.ini
 secrets.json
+logs/file_watcher.log
